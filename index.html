@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f2ebd6;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #decc9d;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            margin-right: 20px;
+        }
+
+        .sidebar input, .sidebar button, .sidebar select {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #885827;
+            border-radius: 8px;
+            width: calc(100% - 22px); /* Adjusting for padding and border */
+        }
+
+        .sidebar button {
+            background-color: #885827;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar button:hover {
+            background-color: #6f4c26;
+        }
+
+        .task-area {
+            flex: 1;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .quadrant {
+            border: 2px solid #ccc;
+            padding: 20px;
+            background-color: #ffffff;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tasks {
+            margin-top: 10px;
+        }
+
+        .task {
+            padding: 10px;
+            background-color: #f0e5d8;
+            cursor: grab;
+            border: 1px solid #885827;
+            border-radius: 8px;
+            text-align: left;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task:hover {
+            background-color: #e3d7c2;
+        }
+
+        .delete-button {
+            background-color: #ff5252;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .delete-button:hover {
+            background-color: #d50000;
+        }
+
+        progress {
+            width: 100%;
+            height: 20px;
+            margin: 10px 0;
+        }
+
+        .overdue {
+            background-color: #ffcccc; /* Light red for overdue tasks */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <h3>Add Task</h3>
+        <input type="text" id="taskInput" placeholder="Enter your task">
+        <input type="datetime-local" id="dueDate">
+        <select id="importance">
+            <option value="urgent-important">Urgent & Important</option>
+            <option value="not-urgent-important">Not Urgent & Important</option>
+            <option value="urgent-not-important">Urgent & not important for life</option>
+            <option value="not-urgent-not-important">What you want to do someday</option>
+        </select>
+        <button onclick="addTasks()">Add Task</button>
+    </div>
+
+    <div class="task-area">
+        <h3>Progress</h3>
+        <progress id="progressBar" value="0" max="100"></progress>
+        <span id="progressText">0%</span>
+
+        <h3>To Do List</h3>
+        <div class="matrix">
+            <div class="quadrant" id="urgent-important" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Your Mission</h4>
+                <div class="tasks" id="tasks-urgent-important">
+                    <div class="task" draggable="true" ondragstart="event.dataTransfer.setData('text', this.id)" id="default-urgent-important">
+                        <input type="text" value="Complete your project proposal" onchange="updateTaskText('default-urgent-important', this.value)">
+                        <input type="datetime-local" value="2024-10-10T09:00" onchange="updateDueDate('due-default-urgent-important', this.value)">
+                        <input type="checkbox" onchange="markAsCompleted(this)">
+                        <button class="delete-button" onclick="deleteTask('default-urgent-important')">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="quadrant" id="not-urgent-important" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Self Investment</h4>
+                <div class="tasks" id="tasks-not-urgent-important">
+                    <div class="task" draggable="true" ondragstart="event.dataTransfer.setData('text', this.id)" id="default-not-urgent-important">
+                        <input type="text" value="Read a book for personal growth" onchange="updateTaskText('default-not-urgent-important', this.value)">
+                        <input type="datetime-local" value="2024-10-15T10:00" onchange="updateDueDate('due-default-not-urgent-important', this.value)">
+                        <input type="checkbox" onchange="markAsCompleted(this)">
+                        <button class="delete-button" onclick="deleteTask('default-not-urgent-important')">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="quadrant" id="urgent-not-important" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Time limited task</h4>
+                <div class="tasks" id="tasks-urgent-not-important">
+                    <div class="task" draggable="true" ondragstart="event.dataTransfer.setData('text', this.id)" id="default-urgent-not-important">
+                        <input type="text" value="Respond to emails" onchange="updateTaskText('default-urgent-not-important', this.value)">
+                        <input type="datetime-local" value="2024-10-12T11:00" onchange="updateDueDate('due-default-urgent-not-important', this.value)">
+                        <input type="checkbox" onchange="markAsCompleted(this)">
+                        <button class="delete-button" onclick="deleteTask('default-urgent-not-important')">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="quadrant" id="not-urgent-not-important" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Wish List</h4>
+                <div class="tasks" id="tasks-not-urgent-not-important">
+                    <div class="task" draggable="true" ondragstart="event.dataTransfer.setData('text', this.id)" id="default-not-urgent-not-important">
+                        <input type="text" value="Watch a movie" onchange="updateTaskText('default-not-urgent-not-important', this.value)">
+                        <input type="datetime-local" value="2024-10-20T18:00" onchange="updateDueDate('due-default-not-urgent-not-important', this.value)">
+                        <input type="checkbox" onchange="markAsCompleted(this)">
+                        <button class="delete-button" onclick="deleteTask('default-not-urgent-not-important')">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let taskIdCounter = 1; // To keep track of the number of tasks
+
+    function addTasks() {
+        const taskInput = document.getElementById("taskInput").value;
+        const dueDate = document.getElementById("dueDate").value;
+        const importance = document.getElementById("importance").value;
+
+        if (!taskInput) {
+            alert("Please enter a task.");
+            return;
+        }
+
+        const quadrantMap = {
+            "urgent-important": "tasks-urgent-important",
+            "not-urgent-important": "tasks-not-urgent-important",
+            "urgent-not-important": "tasks-urgent-not-important",
+            "not-urgent-not-important": "tasks-not-urgent-not-important"
+        };
+
+        const newTaskId = "task-" + taskIdCounter++;
+        const tasksContainer = document.getElementById(quadrantMap[importance]);
+
+        const taskHTML = `
+            <div class="task" id="${newTaskId}" draggable="true" ondragstart="event.dataTransfer.setData('text', this.id)">
+                <input type="text" value="${taskInput}" onchange="updateTaskText('${newTaskId}', this.value)">
+                <input type="datetime-local" value="${dueDate}" onchange="updateDueDate('due-${newTaskId}', this.value)">
+                <input type="checkbox" onchange="markAsCompleted(this)">
+                <button class="delete-button" onclick="deleteTask('${newTaskId}')">Delete</button>
+            </div>
+        `;
+        tasksContainer.insertAdjacentHTML("beforeend", taskHTML);
+        document.getElementById("taskInput").value = '';
+        document.getElementById("dueDate").value = '';
+        updateProgress(); // Update progress after adding a new task
+    }
+
+    function updateTaskText(taskId, newValue) {
+        const taskInput = document.getElementById(taskId).querySelector('input[type="text"]');
+        taskInput.value = newValue;
+    }
+
+    function updateDueDate(dueId, newValue) {
+        const dueInput = document.getElementById(dueId);
+        dueInput.value = newValue;
+    }
+
+    function markAsCompleted(checkbox) {
+        const task = checkbox.parentElement;
+        if (checkbox.checked) {
+            task.style.textDecoration = "line-through";
+        } else {
+            task.style.textDecoration = "none";
+        }
+        updateProgress(); // Update progress whenever a task is marked as completed
+    }
+
+    function deleteTask(taskId) {
+        const task = document.getElementById(taskId);
+        task.parentElement.removeChild(task);
+        updateProgress(); // Update progress after deleting a task
+    }
+
+    function updateProgress() {
+        const allTasks = document.querySelectorAll(".task");
+        const totalTasks = allTasks.length;
+        const completedTasks = Array.from(allTasks).filter(task => task.querySelector('input[type="checkbox"]').checked).length;
+        const progressPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        progressBar.value = progressPercentage;
+        progressText.textContent = `${progressPercentage}%`;
+    }
+
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const taskId = event.dataTransfer.getData("text");
+        const task = document.getElementById(taskId);
+        const quadrantId = event.target.id;
+
+        if (task && quadrantId.startsWith("tasks-")) {
+            document.getElementById(quadrantId).appendChild(task);
+        }
+    }
+</script>
+
+</body>
+</html>
+
+
+
+

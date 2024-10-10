@@ -1,0 +1,150 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Verdana', sans-serif; /* 柔らかい印象のフォントに変更 */
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f2ebd6; /* クリーム色 */
+    transform: scale(0.9); /* 画面をズームアウト */
+    transform-origin: top left; /* 拡大縮小の基準点を左上に */
+    overflow-x: hidden; /* 横スクロールを防ぐ */
+    max-width: 1200px; /* 画面の最大幅を制限 */
+    margin: 0 auto; /* 中央揃え */
+}
+
+
+.sidebar {
+    width: 220px;
+    background-color: #decc9d; /* 薄いカーキ */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 優しい影 */
+    border-radius: 12px; /* 角を丸める */
+}
+
+.sidebar h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #885827; /* ダークブラウン */
+    text-align: center; /* センター揃え */
+}
+
+.sidebar textarea, .sidebar input[type="date"] {
+    width: 100%;
+    border: 1px solid #885827; /* ダークブラウン */
+    padding: 10px;
+    border-radius: 8px; /* 角を丸める */
+    background-color: #ffffff; /* 白色 */
+}
+
+.sidebar button {
+    margin: 10px 0;
+    padding: 12px;
+    width: 100%;
+    background-color: #885827; /* ダークブラウン */
+    color: #ffffff; /* 白 */
+    border: none;
+    border-radius: 8px; /* 丸みを持たせる */
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.sidebar button:hover {
+    background-color: #6f4c26; /* ホバー時の濃い茶色 */
+}
+
+.matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 80%;
+    margin: 20px 0;
+}
+
+.quadrant {
+    border: 2px solid #ccc; /* 薄いグレー */
+    padding: 20px;
+    background-color: #ffffff; /* 白色 */
+    text-align: center;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* 優しい影 */
+    border-radius: 12px; /* 角を丸める */
+}
+
+.tasks {
+    margin-top: 10px;
+}
+
+.task {
+    padding: 10px;
+    background-color: #f0e5d8; /* 薄いベージュ */
+    cursor: grab;
+    border: 1px solid #885827; /* ダークブラウン */
+    border-radius: 8px; /* 丸みを持たせる */
+    text-align: center;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.task:hover {
+    background-color: #e3d7c2; /* ホバー時の薄い茶色 */
+}
+
+.delete-button {
+    background-color: #ff5252; /* レッド */
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px; /* 丸みを持たせる */
+    font-size: 14px;
+}
+
+.delete-button:hover {
+    background-color: #d50000; /* ダークレッド */
+}
+
+.progress-bar {
+    height: 5px;
+    background-color: #885827; /* ダークブラウン */
+    transition: width 0.3s; /* アニメーションを追加 */
+}
+
+#progressContainer {
+    margin-top: 20px;
+}
+
+progress {
+    width: 100%;
+    height: 20px;
+}
+
+#progressContainer {
+    margin: 20px 0; /* 上下にスペースを追加 */
+}
+
+#progressBar {
+    width: 100%; /* 幅を100%に */
+    height: 20px; /* 高さを調整 */
+}
+
+.task.completed input[type="text"], 
+.task.completed input[type="datetime-local"] {
+    text-decoration: line-through;
+    color: #888; /* 薄暗くする */
+}
+
+.task.completed {
+    background-color: #d3d3d3; /* 背景色を暗くする */
+}
+
